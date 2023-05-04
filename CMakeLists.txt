@@ -17,7 +17,7 @@ add_definitions(${PCL_DEFINITIONS})
 # 忽略警告用
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcudafe \"--diag_suppress=code_is_unreachable\"")
 
-add_executable(main_cmake src/surface_measurement.cpp src/cuda/surface_measurement.cu src/utils.cpp src/pipeline.cpp src/pose_estimation.cpp src/cuda/pose_estimation.cu main.cpp)
+add_executable(main_cmake src/surface_measurement.cpp src/cuda/surface_measurement.cu src/utils.cpp src/pipeline.cpp main.cpp)
 
 
 target_link_libraries(main_cmake ${CUDA_LIBRARIES})

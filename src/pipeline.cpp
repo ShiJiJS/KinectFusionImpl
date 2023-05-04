@@ -39,39 +39,10 @@ namespace kinectfusion{
         // 将原始彩色图上传到显存中
         frame_data.color_pyramid[0].upload(color_map);
 
-        //步骤2 Pose estimation
-        //表示icp过程是否成功的变量
-        bool icp_success { true };
-        if (frame_id > 0) { // Do not perform ICP for the very first frame
-            // 不在第一帧进行位姿估计
-            icp_success = step::pose_estimation(
-                this->Tgk_Matrix,                               // 输入: 上一帧的相机位姿; 输出: 当前帧得到的相机位姿
-                frame_data,                                     // 当前帧的彩色图/深度图/顶点图/法向图数据
-                this->prediction_result,                        // 上一帧图像输入后, 推理出的平面模型，使用顶点图、法向图来表示
-                camera_parameters,                              // 相机内参
-                configuration.num_levels,                       // 金字塔层数
-                configuration.distance_threshold,               // icp 匹配过程中视为 outlier 的距离差
-                configuration.angle_threshold,                  // icp 匹配过程中视为 outlier 的角度差 (deg)
-                configuration.icp_iterations);                  // icp 过程的迭代次数
-        }
-        
-        // 如果 icp 过程不成功, 那么就说明当前失败了
-        if (!icp_success)
-            // icp失败之后本次处理退出,但是上一帧推理的得到的平面将会一直保持, 每次新来一帧都会重新icp后一直都在尝试重新icp, 尝试重定位回去
-            return false;
-        // 记录当前帧的位姿
-        // poses.push_back(current_pose);
-        if(this->frame_id > 0){
-            std::cout << "aaaaaaaa" << std::endl;
-            std::cout << this->Tgk_Matrix << std::endl;
-        }
+        cv::Mat downloaded_vertex_map;
+        frame_data.vertex_pyramid[0].download(downloaded_vertex_map);
+        utils::vertexMapToPointCloudAndSave(downloaded_vertex_map);
 
-        if(this->frame_id == 0){
-            std::cout << "bbbbbbbbbb" << std::endl;
-            this->prediction_result.vertex_pyramid = frame_data.vertex_pyramid;
-            this->prediction_result.normal_pyramid = frame_data.normal_pyramid;
-        }
-        frame_id ++;
         return true;
         
 

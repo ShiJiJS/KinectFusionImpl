@@ -52,23 +52,8 @@ int main() {
         return 1;
     }
 
-    // 读入深度图2
-    cv::Mat depth_image2 = cv::imread("depth_image2.png", cv::IMREAD_UNCHANGED);
-    if (depth_image.empty()) {
-        std::cerr << "Failed to read depth image!" << std::endl;
-        return 1;
-    }
-
-    // 读入 RGB 图像2
-    cv::Mat rgb_image2 = cv::imread("rgb_image2.png", cv::IMREAD_COLOR);
-    if (rgb_image.empty()) {
-        std::cerr << "Failed to read RGB image!" << std::endl;
-        return 1;
-    }
 
     Pipeline pipeline(parameters,configuration);
-    bool isSucceed1 = pipeline.process_frame(depth_image,rgb_image);
-    bool isSucceed2 = pipeline.process_frame(depth_image2,rgb_image2);
-    std::cout << "1: " << isSucceed1 << " 2: " <<isSucceed2 <<endl;
+    pipeline.process_frame(depth_image,rgb_image);
     return 0;
 }

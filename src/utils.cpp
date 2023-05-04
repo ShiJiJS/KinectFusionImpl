@@ -88,7 +88,7 @@ namespace kinectfusion{
            return cloud;
         }
 
-        void vertexMapToPointCloud(const cv::Mat& vertex_map) {
+        void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map) {
             // 遍历顶点图的每个像素
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
             for (int y = 0; y < vertex_map.rows; ++y) {
