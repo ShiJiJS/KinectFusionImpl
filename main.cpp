@@ -39,14 +39,14 @@ int main() {
     );
 
     // 读入深度图
-    cv::Mat depth_image = cv::imread("depth_image.png", cv::IMREAD_UNCHANGED);
+    cv::Mat depth_image = cv::imread("/home/shiji/KinectFusionImpl/build/depth_image.png", cv::IMREAD_UNCHANGED);
     if (depth_image.empty()) {
         std::cerr << "Failed to read depth image!" << std::endl;
         return 1;
     }
 
     // 读入 RGB 图像
-    cv::Mat rgb_image = cv::imread("rgb_image.png", cv::IMREAD_COLOR);
+    cv::Mat rgb_image = cv::imread("/home/shiji/KinectFusionImpl/build/rgb_image.png", cv::IMREAD_COLOR);
     if (rgb_image.empty()) {
         std::cerr << "Failed to read RGB image!" << std::endl;
         return 1;

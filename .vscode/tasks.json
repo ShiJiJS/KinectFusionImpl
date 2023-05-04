@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "cmake configure",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "-B",
+          "${workspaceFolder}/build",
+          "-S",
+          "${workspaceFolder}",
+          "-DCMAKE_BUILD_TYPE=Debug"
+        ],
+        "problemMatcher": []
+      },
+      {
+        "label": "make",
+        "type": "shell",
+        "command": "make",
+        "args": ["-C", "${workspaceFolder}/build"],
+        "dependsOn": "cmake configure",
+        "problemMatcher": []
+      }
+    ]
+  }

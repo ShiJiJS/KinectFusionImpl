@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "CUDA C++: Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/main_cmake",
+            "preLaunchTask": "make",
+            "MIMode": "gdb",
+            "miDebuggerPath": "cuda-gdb",
+            "cwd": "${workspaceFolder}"
+          }
+    ]
+}
