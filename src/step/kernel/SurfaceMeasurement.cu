@@ -1,26 +1,17 @@
+#include <Eigen/Eigen>
 #include <cuda_runtime.h>
 #include <opencv2/core/cuda.hpp>
-#include <Eigen/Eigen>
-
-#include "../../include/data_types.h"
+#include "../../../include/DataTypes.h"
 
 using cv::cuda::GpuMat;
-
-// 可以理解为在设备端的 GpuMat 的类型, 精简了数据结构，意味着参数传递的过程比较快
-// 保留了 GpuMat 的cols rows step data
 using cv::cuda::PtrStep;
-// 保留了 GpuMat 的 step data
-// NOTE 由于字节对齐的原因，图像在显存中可能无法连续存储，每一行的末尾可能要补几个空字节，因此实际上一行占用的字节由 GpuMat::step 指出
 using cv::cuda::PtrStepSz;
 
-// ? 后缀 da 是什么意思? device array, 设备端数组?
-// 三维点的数据类型
 using Vec3f = Eigen::Matrix<float, 3, 1, Eigen::DontAlign>;
 
-namespace kinectfusion{
-    namespace step{
-        namespace cuda{
-            // 核函数，用于计算深度图像中每一个像素的3D点
+namespace step{
+    namespace kernel {
+        // 核函数，用于计算深度图像中每一个像素的3D点
             __global__
             void kernel_compute_vertex_map(
                 const PtrStepSz<float> depth_map,       // 滤波之后的深度图像对象
@@ -131,6 +122,5 @@ namespace kinectfusion{
                 // step 3 等待核函数计算完成
                 cudaThreadSynchronize();
             }
-        }
     }
 }

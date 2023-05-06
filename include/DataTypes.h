@@ -1,0 +1,59 @@
+#pragma once
+#include <opencv2/core/cuda.hpp>
+#include <opencv2/core/core.hpp>
+#include "Configuration.h"
+
+using cv::cuda::GpuMat;
+using config::CameraParameters;
+
+struct FrameData {
+    std::vector<GpuMat> depth_pyramid;                              // 原始深度图的金字塔
+    std::vector<GpuMat> smoothed_depth_pyramid;                     // 滤波后的深度图金字塔
+    std::vector<GpuMat> vertex_pyramid;                             // 3D点金字塔
+    std::vector<GpuMat> normal_pyramid;                             // 法向量金字塔
+
+    // frame data
+    FrameData(const size_t pyramid_height,CameraParameters cameraParameters) :
+            depth_pyramid(pyramid_height), smoothed_depth_pyramid(pyramid_height),
+            vertex_pyramid(pyramid_height), normal_pyramid(pyramid_height){
+        //为金字塔的每一层分配数据
+        for (int level = 0; level < pyramid_height; ++level) {
+            //获取图像大小
+            const int width = cameraParameters.level(level).image_width;
+            const int height = cameraParameters.level(level).image_height;
+            //分配每个金字塔"图像"的存储空间
+            //该部分内存由GPUMat自动管理。无需手动释放
+            this->depth_pyramid[level] = cv::cuda::createContinuous(height, width, CV_32FC1);
+            this->smoothed_depth_pyramid[level] = cv::cuda::createContinuous(height, width, CV_32FC1);
+            this->vertex_pyramid[level] = cv::cuda::createContinuous(height, width, CV_32FC3);
+            this->normal_pyramid[level] = cv::cuda::createContinuous(height, width, CV_32FC3);
+        }
+    };
+};
+
+
+struct PredictionResult {
+    std::vector<GpuMat> vertex_pyramid;                     // 三维点的金字塔
+    std::vector<GpuMat> normal_pyramid;                     // 法向量的金字塔
+     // 构造函数
+    PredictionResult(const size_t pyramid_height, const CameraParameters camera_parameters) :
+            // 初始化三个"图像"金字塔的高度
+            vertex_pyramid(pyramid_height), normal_pyramid(pyramid_height)
+    {
+        // 遍历每一层金字塔
+        for (size_t level = 0; level < pyramid_height; ++level) {
+            // 分配内存
+            vertex_pyramid[level] =
+                    cv::cuda::createContinuous(camera_parameters.level(level).image_height,
+                                               camera_parameters.level(level).image_width,
+                                               CV_32FC3);
+            normal_pyramid[level] =
+                    cv::cuda::createContinuous(camera_parameters.level(level).image_height,
+                                               camera_parameters.level(level).image_width,
+                                               CV_32FC3);
+            // 然后清空为0
+            vertex_pyramid[level].setTo(0);
+            normal_pyramid[level].setTo(0);
+        }// 遍历每一层金字塔
+    }
+};

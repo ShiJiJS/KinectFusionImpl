@@ -69,6 +69,11 @@
     "cfenv": "cpp",
     "typeindex": "cpp",
     "variant": "cpp",
-    "__nullptr": "cpp"
+    "__nullptr": "cpp",
+    "geometry": "cpp",
+    "csignal": "cpp",
+    "unordered_set": "cpp",
+    "future": "cpp",
+    "valarray": "cpp"
   }
 }
