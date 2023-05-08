@@ -23,8 +23,5 @@ namespace utils{
     // PointCloud<pcl::PointXYZRGBNormal>::Ptr create_point_cloud(const cv::Mat& vertex_map, const cv::Mat& normal_map);
     // //生成仅有坐标的点云
     // void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map);
-    //完成Matrix3f到Matf33的转化
-    mpe::Matf33 eigenMatrix3fToMatf33(const Eigen::Matrix3f& eigen_mat);
-    //完成Matrix31f到Matf31的转化
-    mpe::Matf31 eigenMatrix3x1ToMatf31(const Eigen::Matrix<float, 3, 1, Eigen::DontAlign>& eigen_mat);
+
 }

@@ -277,11 +277,11 @@ namespace step {
         {
 
             //将eigen矩阵转为自定义的矩阵，传入kernel中使用
-            Matf33 rotation_current_Matf33 = utils::eigenMatrix3fToMatf33(rotation_current_eigenMf33);
-            Matf33 rotation_previous_inv_Matf33 = utils::eigenMatrix3fToMatf33(rotation_previous_inv_eigenMf33);
+            Matf33 rotation_current_Matf33 = mpe::eigenMatrix3fToMatf33(rotation_current_eigenMf33);
+            Matf33 rotation_previous_inv_Matf33 = mpe::eigenMatrix3fToMatf33(rotation_previous_inv_eigenMf33);
 
-            Matf31 translation_current_Matf31 = utils::eigenMatrix3x1ToMatf31(translation_current_eigenMf31);
-            Matf31 translation_previous_Matf31 = utils::eigenMatrix3x1ToMatf31(translation_previous_eigenMf31);
+            Matf31 translation_current_Matf31 = mpe::eigenMatrix3x1ToMatf31(translation_current_eigenMf31);
+            Matf31 translation_previous_Matf31 = mpe::eigenMatrix3x1ToMatf31(translation_previous_eigenMf31);
 
             // step 0 计算需要的线程规模, 每个线程处理当前图像中的一个像素
             const int cols = vertex_map_current.cols;
@@ -502,5 +502,24 @@ namespace mpe {
             }
             printf("\n");
         }
+    }
+
+
+    Matf33 eigenMatrix3fToMatf33(const Eigen::Matrix3f& eigen_mat) {
+        Matf33 mat;
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                mat.at(i, j) = eigen_mat(i, j);
+            }
+        }
+        return mat;
+    }
+
+    Matf31 eigenMatrix3x1ToMatf31(const Eigen::Matrix<float, 3, 1, Eigen::DontAlign>& eigen_mat) {
+        Matf31 mat;
+        for (int i = 0; i < 3; ++i) {
+            mat.at(i) = eigen_mat(i);
+        }
+        return mat;
     }
 }

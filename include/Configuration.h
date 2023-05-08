@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <cuda_runtime.h>
 
 namespace config{
     //相机参数
@@ -21,7 +22,7 @@ namespace config{
     // color_sigma：取决于深度图像的数值范围。通常，可以从范围的10%到30%开始尝试。
     // spatial_sigma：取决于图像的尺寸和噪声水平。可以从5到15的范围内尝试不同的值。  
     constexpr int KERNAL_SIZE = 5;// 双边滤波器使用的窗口（核）大小
-    constexpr float DEPTH_CUTOFF = 100000.f;//截断深度
+    constexpr float DEPTH_CUTOFF = 1000.f;//截断深度
     constexpr float COLOR_SIGMA = 1.f;// 值域滤波的方差
     constexpr float SPATIAL_SIGMA = 1.f;// 空间域滤波的方差
 
@@ -76,6 +77,10 @@ namespace config{
         float distanceThreshold; // ICP 匹配过程中视为外点的距离差
         float angleThreshold; //匹配过程中视为外点的角度差（以度为单位）
         std::vector<int> icpIterations {10, 5, 4}; //迭代次数,即第一层迭代10次,第二层5次,第三层4次
+        int3 volumeSize { make_int3(512, 512, 512) };
+        float voxelScale { 2.f };
+        float truncationDistance { 25.f };
+
 
         GlobalConfiguration(float _depthCutoff, int _kernalSize, float _colorSigma, float _spatialSigma, int _numLevels, float _distanceThreshold, float _angleThreshold)
         : depthCutoff(_depthCutoff), kernalSize(_kernalSize), colorSigma(_colorSigma), spatialSigma(_spatialSigma),

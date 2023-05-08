@@ -15,6 +15,13 @@
         "problemMatcher": []
       },
       {
+        "label": "make only",
+        "type": "shell",
+        "command": "make",
+        "args": ["-C", "${workspaceFolder}/build"],
+        "problemMatcher": []
+      },
+      {
         "label": "make",
         "type": "shell",
         "command": "make",

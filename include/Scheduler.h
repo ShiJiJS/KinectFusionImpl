@@ -3,12 +3,18 @@
 #include "step/PreProcessor.h"
 #include "step/SurfaceMeasurement.h"
 #include "step/PoseEstimator.h"
+#include "step/SurfaceReconstructor.h"
+#include "step/SurfacePredictor.h"
 
 using config::CameraParameters;
 using config::GlobalConfiguration;
 using step::PreProcessor;
 using step::SurfaceMeasurement;
 using step::PoseEstimator;
+using step::SurfaceReconstructor;
+using step::SurfacePredictor;
+
+
 
 class Scheduler{
 private:
@@ -20,11 +26,16 @@ private:
     PreProcessor preProcessor; //预处理器
     SurfaceMeasurement surfaceMeasurement;
     PoseEstimator poseEstimator;
+    SurfaceReconstructor surfaceReconstructor;
+    SurfacePredictor surfacePredictor;
     Eigen::Matrix4f Tgk_Matrix; //相机位姿的转移矩阵
     PredictionResult predictionResult; //Raycasting算出的顶点图和法向图
-    // ModelData modelData;//模型数据，存储tsdf和颜色值
 public:
-    Scheduler(CameraParameters cameraParameters,GlobalConfiguration configuration,PreProcessor preprocessor,SurfaceMeasurement surfaceMeasurement,PoseEstimator poseEstimator);
+    Scheduler(CameraParameters cameraParameters,GlobalConfiguration configuration,
+        PreProcessor preprocessor,SurfaceMeasurement surfaceMeasurement,
+        PoseEstimator poseEstimator, SurfaceReconstructor surfaceReconstructor,
+        SurfacePredictor surfacePredictor);
+
     //添加新一帧的信息
     //depth_map 为16U1C的深度图，color_map为8U3C的RGB图
     bool process_new_frame(const cv::Mat& depth_map, const cv::Mat& color_map);

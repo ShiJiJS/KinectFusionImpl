@@ -6,9 +6,13 @@
 
 
 
-Scheduler::Scheduler(CameraParameters cameraParameters, GlobalConfiguration configuration, PreProcessor preprocessor,SurfaceMeasurement surfaceMeasurement,PoseEstimator poseEstimator)
-    : cameraParameters(cameraParameters), configuration(configuration), preProcessor(preprocessor), surfaceMeasurement(surfaceMeasurement),poseEstimator(poseEstimator),
-    predictionResult(configuration.numLevels,cameraParameters),frameId(0){
+Scheduler::Scheduler(CameraParameters cameraParameters, GlobalConfiguration configuration, PreProcessor 
+preprocessor,SurfaceMeasurement surfaceMeasurement,PoseEstimator poseEstimator,
+SurfaceReconstructor surfaceReconstructor,SurfacePredictor surfacePredictor)
+    : cameraParameters(cameraParameters), configuration(configuration), preProcessor(preprocessor), 
+    surfaceMeasurement(surfaceMeasurement),poseEstimator(poseEstimator),
+    predictionResult(configuration.numLevels,cameraParameters),surfaceReconstructor(surfaceReconstructor),
+    surfacePredictor(surfacePredictor),frameId(0){
         //初始化Tgk为单位矩阵
         this->Tgk_Matrix = Eigen::Matrix4f::Identity();
         // The pose starts in the middle of the cube, offset along z by the initial depth
@@ -29,6 +33,7 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
     // frameData.vertex_pyramid[0].download(downloaded_vertex_map);
     // utils::vertexMapToPointCloudAndSave(downloaded_vertex_map);
     // return true;
+    frameData.color_pyramid[0].upload(color_map);
 
     bool icp_success { true };
     if (this->frameId > 0) { // Do not perform ICP for the very first frame
@@ -44,24 +49,47 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
             configuration.icpIterations);                  // icp 过程的迭代次数
     }
     // 如果 icp 过程不成功, 那么就说明当前失败了
-    if (!icp_success)
+    if (!icp_success){
+        std::cout << "ICP失败" <<std::endl;
         // icp失败之后本次处理退出,但是上一帧推理的得到的平面将会一直保持, 每次新来一帧都会重新icp后一直都在尝试重新icp, 尝试重定位回去
         return false;
+    }
+        
 
     // 记录当前帧的位姿
-        // poses.push_back(current_pose);
-        if(this->frameId > 0){
-            std::cout << "aaaaaaaa" << std::endl;
-            std::cout << this->Tgk_Matrix << std::endl;
-        }
+    // poses.push_back(current_pose);
+    // if(this->frameId > 0){
+    //     std::cout << "aaaaaaaa" << std::endl;
+    //     std::cout << this->Tgk_Matrix << std::endl;
+    // }
 
-        if(this->frameId == 0){
-            std::cout << "bbbbbbbbbb" << std::endl;
-            this->predictionResult.vertex_pyramid = frameData.vertex_pyramid;
-            this->predictionResult.normal_pyramid = frameData.normal_pyramid;
-        }
-        this->frameId ++;
-        return true;
+    // if(this->frameId == 0){
+    //     std::cout << "bbbbbbbbbb" << std::endl;
+    //     this->predictionResult.vertex_pyramid = frameData.vertex_pyramid;
+    //     this->predictionResult.normal_pyramid = frameData.normal_pyramid;
+    // }
+   
+
+    this->surfaceReconstructor.surface_reconstruction(
+            frameData.depth_pyramid[0],                        // 金字塔底层的深度图像
+            frameData.color_pyramid[0],                        // 金字塔底层的彩色图像
+            cameraParameters,                                  // 相机内参
+            configuration.truncationDistance,                  // 截断距离u
+            this->Tgk_Matrix.inverse());
+    
+    for (int level = 0; level < configuration.numLevels; ++level)
+        // 对每层图像的数据都进行表面的推理
+        this->surfacePredictor.surface_prediction(
+            surfaceReconstructor.getModelData(),              // Global Volume
+            predictionResult.vertex_pyramid[level],               // 推理得到的平面的顶点图
+            predictionResult.normal_pyramid[level],               // 推理得到的平面的法向图 
+            predictionResult.color_pyramid[level],                // 推理得到的彩色图
+            cameraParameters.level(level),                 // 当前图层的相机内参
+            configuration.truncationDistance,              // 截断距离
+            this->Tgk_Matrix);
+
+    this->frameId ++;
+    return true;
 
 }
 
@@ -97,7 +125,9 @@ Scheduler SchedulerFactory::build(){
     // volumeSize.z = 512;
     // ModelData modelData(volumeSize,0.005);
     PoseEstimator poseEstimator(cameraParameters,configuration);
-    
-    Scheduler scheduler(cameraParameters,configuration,preProcessor,surfaceMeasurement,poseEstimator);
+    SurfaceReconstructor surfaceReconstructor(cameraParameters,configuration);
+    SurfacePredictor surfacePredictor(cameraParameters,configuration);
+    Scheduler scheduler(cameraParameters,configuration,preProcessor,surfaceMeasurement,
+                        poseEstimator,surfaceReconstructor,surfacePredictor);
     return scheduler;
 }
