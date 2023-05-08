@@ -54,52 +54,52 @@ namespace utils{
         return typeName;
     }
 
-    // Convert vertex map and normal map to PCL point cloud
-    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr create_point_cloud(const cv::Mat& vertex_map, const cv::Mat& normal_map) {
-       pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+    // // Convert vertex map and normal map to PCL point cloud
+    // pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr create_point_cloud(const cv::Mat& vertex_map, const cv::Mat& normal_map) {
+    //    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
 
-       for (int y = 0; y < vertex_map.rows; ++y) {
-           for (int x = 0; x < vertex_map.cols; ++x) {
-               pcl::PointXYZRGBNormal point;
+    //    for (int y = 0; y < vertex_map.rows; ++y) {
+    //        for (int x = 0; x < vertex_map.cols; ++x) {
+    //            pcl::PointXYZRGBNormal point;
 
-               // Set position from vertex map
-               cv::Vec3f position = vertex_map.at<cv::Vec3f>(y, x);
-               point.x = position[0];
-               point.y = position[1];
-               point.z = position[2];
+    //            // Set position from vertex map
+    //            cv::Vec3f position = vertex_map.at<cv::Vec3f>(y, x);
+    //            point.x = position[0];
+    //            point.y = position[1];
+    //            point.z = position[2];
 
-               // Set normal from normal map
-               cv::Vec3f normal = normal_map.at<cv::Vec3f>(y, x);
-               point.normal_x = normal[0];
-               point.normal_y = normal[1];
-               point.normal_z = normal[2];
+    //            // Set normal from normal map
+    //            cv::Vec3f normal = normal_map.at<cv::Vec3f>(y, x);
+    //            point.normal_x = normal[0];
+    //            point.normal_y = normal[1];
+    //            point.normal_z = normal[2];
 
-               // Set color
-               point.r = 255;
-               point.g = 255;
-               point.b = 255;
+    //            // Set color
+    //            point.r = 255;
+    //            point.g = 255;
+    //            point.b = 255;
 
-               cloud->push_back(point);
-           }
-       }
+    //            cloud->push_back(point);
+    //        }
+    //    }
 
-       return cloud;
-    }
+    //    return cloud;
+    // }
 
-    void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map) {
-        // 遍历顶点图的每个像素
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-        for (int y = 0; y < vertex_map.rows; ++y) {
-            for (int x = 0; x < vertex_map.cols; ++x) {
-                // 获取顶点坐标（X, Y, Z）
-                cv::Vec3f vertex = vertex_map.at<cv::Vec3f>(y, x);
-                //忽略无效的点（例如深度为0的点）
-                if (vertex[2] == 0) continue;
-                // 将三维点添加到点云中
-                cloud->push_back(pcl::PointXYZ(vertex[0] / 5000, vertex[1] /5000, vertex[2]/5000));
-            }
-        }
-        // 保存点云为PCD文件
-        pcl::io::savePCDFileASCII("output.pcd", *cloud);
-    }
+    // void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map) {
+    //     // 遍历顶点图的每个像素
+    //     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    //     for (int y = 0; y < vertex_map.rows; ++y) {
+    //         for (int x = 0; x < vertex_map.cols; ++x) {
+    //             // 获取顶点坐标（X, Y, Z）
+    //             cv::Vec3f vertex = vertex_map.at<cv::Vec3f>(y, x);
+    //             //忽略无效的点（例如深度为0的点）
+    //             if (vertex[2] == 0) continue;
+    //             // 将三维点添加到点云中
+    //             cloud->push_back(pcl::PointXYZ(vertex[0] / 5000, vertex[1] /5000, vertex[2]/5000));
+    //         }
+    //     }
+    //     // 保存点云为PCD文件
+    //     pcl::io::savePCDFileASCII("output.pcd", *cloud);
+    // }
 }

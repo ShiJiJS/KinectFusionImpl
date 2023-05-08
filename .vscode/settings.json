@@ -74,6 +74,8 @@
     "csignal": "cpp",
     "unordered_set": "cpp",
     "future": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "__config": "cpp",
+    "eigen": "cpp"
   }
 }

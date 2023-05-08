@@ -2,6 +2,7 @@
 #include <opencv2/core/cuda.hpp>
 #include <opencv2/core/core.hpp>
 #include "Configuration.h"
+// #include <cuda_runtime.h>
 
 using cv::cuda::GpuMat;
 using config::CameraParameters;
@@ -30,6 +31,26 @@ struct FrameData {
         }
     };
 };
+
+
+// struct ModelData {
+//     // OpenCV 提供的在GPU上的图像数据类型
+//     GpuMat tsdfVolume; //short2
+//     GpuMat colorVolume; //uchar4
+//     int3 volumeSize;
+//     float voxelScale;
+//     // 构造函数
+//     ModelData(const int3 volumeSize, const float voxelScale) :
+//             // 注意 TSDF 是2通道的, 意味着其中一个通道存储TSDF函数值, 另外一个通道存储其权重
+//             tsdfVolume(cv::cuda::createContinuous(volumeSize.y * volumeSize.z, volumeSize.x, CV_16SC2)),
+//             colorVolume(cv::cuda::createContinuous(volumeSize.y * volumeSize.z, volumeSize.x, CV_8UC3)),
+//             volumeSize(volumeSize), voxelScale(voxelScale)
+//     {
+//         // 全部清空
+//         tsdfVolume.setTo(0);
+//         colorVolume.setTo(0);
+//     }
+// };
 
 
 struct PredictionResult {

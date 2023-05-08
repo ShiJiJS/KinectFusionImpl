@@ -21,6 +21,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 # 忽略警告用
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --diag_suppress=esa_on_defaulted_function_ignored")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --relocatable-device-code=true")
 
 # add_executable(main_cmake src/surface_measurement.cpp src/cuda/surface_measurement.cu src/utils.cpp src/pipeline.cpp main.cpp)
 include_directories(include)

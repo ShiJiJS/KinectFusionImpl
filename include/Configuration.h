@@ -42,6 +42,7 @@ namespace config{
         SECOND = 5,
         THIRD = 4};
 
+    
 
     struct CameraParameters {
         int image_width, image_height;

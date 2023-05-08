@@ -16,7 +16,22 @@ int main(){
         std::cerr << "Failed to read RGB image!" << std::endl;
         return 1;
     }
+
+    // 读入深度图2
+    cv::Mat depth_image2 = cv::imread("/home/shiji/KinectFusionImpl/build/depth_image2.png", cv::IMREAD_UNCHANGED);
+    if (depth_image.empty()) {
+        std::cerr << "Failed to read depth image!" << std::endl;
+        return 1;
+    }
+
+    // 读入 RGB 图像2
+    cv::Mat rgb_image2 = cv::imread("/home/shiji/KinectFusionImpl/build/rgb_image2.png", cv::IMREAD_COLOR);
+    if (rgb_image.empty()) {
+        std::cerr << "Failed to read RGB image!" << std::endl;
+        return 1;
+    }
     
     scheduler.process_new_frame(depth_image,rgb_image);
+    scheduler.process_new_frame(depth_image2,rgb_image2);
     return 0;
 }
