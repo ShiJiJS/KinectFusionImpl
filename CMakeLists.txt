@@ -1,24 +1,27 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
-project(main_cmake LANGUAGES CXX CUDA)
-
+project(main_cmake)
+# project(main_cmake LANGUAGES CXX)
 # Use modern C++
+enable_language(CUDA)
 set(CMAKE_CXX_STANDARD 14)
 
 # Setting output paths
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --diag_suppress=esa_on_defaulted_function_ignored")
+set(CUDA_SEPARABLE_COMPILATION ON)
+# 指定 CUDA 架构
 # ------------------------------------------------
 #                 Dependencies
 # ------------------------------------------------
 ## CUDA
-find_package(CUDA REQUIRED)
-IF (CUDA_FOUND)
-    include_directories("${CUDA_INCLUDE_DIRS}")
-    message(STATUS "==> main_cmake Found CUDA： " ${CUDA_INCLUDE_DIRS})
-    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --diag_suppress=esa_on_defaulted_function_ignored")
-    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --relocatable-device-code=true")
-ENDIF ()
+# find_package(CUDA REQUIRED)
+# IF (CUDA_FOUND)
+#     include_directories("${CUDA_INCLUDE_DIRS}")
+#     message(STATUS "==> main_cmake Found CUDA： " ${CUDA_INCLUDE_DIRS})
+#     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --diag_suppress=esa_on_defaulted_function_ignored")
+#     # set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --relocatable-device-code=true")
+# ENDIF ()
 
 ## OpenCV
 find_package(OpenCV REQUIRED)
@@ -47,13 +50,20 @@ add_definitions(${PCL_DEFINITIONS})
 # ------------------------------------------------
 include_directories(include)
 
-# Add Matrix library
-add_library(MatrixLib src/Matrix.cu include/Matrix.h)
-target_compile_features(MatrixLib PUBLIC cxx_std_11)
-set_target_properties(MatrixLib PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
 
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.cu")
+
+
+foreach (source IN ITEMS ${SOURCES})
+    if ("${source}" MATCHES ".*\\.cu$")
+        set_property(
+            SOURCE "${source}"
+            PROPERTY CUDA_SEPARABLE_COMPILATION ON
+        )
+    endif()
+endforeach ()
+
+
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 

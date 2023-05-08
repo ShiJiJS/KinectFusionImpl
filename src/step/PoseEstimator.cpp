@@ -16,7 +16,7 @@ namespace step{
 
     }
 
-    bool pose_estimation(
+    bool PoseEstimator::pose_estimation(
             Eigen::Matrix4f& pose,                  // 输入: 上一帧的相机位姿; 输出: 当前帧得到的相机位姿
             const FrameData& frame_data,            // 当前帧中的数据(顶点图+法向图)
             const PredictionResult& model_data,            // 上一帧对Global TSDF Model 进行表面推理得到的表面模型数据(Vertex Map + Normal Map)

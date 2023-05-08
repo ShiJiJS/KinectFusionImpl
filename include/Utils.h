@@ -13,6 +13,7 @@
 #pragma once
 // using pcl::PointCloud;
 
+
 namespace utils{
     //读入深度图索引文件并返回存储路径的vector
     std::vector<std::string> read_depth_image_paths(const std::string& index_file);
@@ -23,7 +24,7 @@ namespace utils{
     // //生成仅有坐标的点云
     // void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map);
     //完成Matrix3f到Matf33的转化
-    Matf33 eigenMatrix3fToMatf33(const Eigen::Matrix3f& eigen_mat);
+    mpe::Matf33 eigenMatrix3fToMatf33(const Eigen::Matrix3f& eigen_mat);
     //完成Matrix31f到Matf31的转化
-    Matf31 eigenMatrix3x1ToMatf31(const Eigen::Matrix<float, 3, 1, Eigen::DontAlign>& eigen_mat);
+    mpe::Matf31 eigenMatrix3x1ToMatf31(const Eigen::Matrix<float, 3, 1, Eigen::DontAlign>& eigen_mat);
 }
