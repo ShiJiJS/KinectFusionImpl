@@ -57,5 +57,7 @@ int main(){
         }
     }
 
+    scheduler.extract_and_save_pointcloud();
+
     return 0;
 }

@@ -29,7 +29,7 @@ if (OpenCV_INCLUDE_DIRS)
 endif (OpenCV_INCLUDE_DIRS)
 
 ## VTK
-find_package(VTK 7.1 REQUIRED)
+find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
 ## Eigen3

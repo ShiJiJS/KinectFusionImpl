@@ -30,6 +30,7 @@ private:
     SurfacePredictor surfacePredictor;
     Eigen::Matrix4f Tgk_Matrix; //相机位姿的转移矩阵
     PredictionResult predictionResult; //Raycasting算出的顶点图和法向图
+    
 public:
     Scheduler(CameraParameters cameraParameters,GlobalConfiguration configuration,
         PreProcessor preprocessor,SurfaceMeasurement surfaceMeasurement,
@@ -39,6 +40,8 @@ public:
     //添加新一帧的信息
     //depth_map 为16U1C的深度图，color_map为8U3C的RGB图
     bool process_new_frame(const cv::Mat& depth_map, const cv::Mat& color_map);
+
+    void extract_and_save_pointcloud();
 };
 
 class SchedulerFactory{

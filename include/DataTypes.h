@@ -87,3 +87,38 @@ struct PredictionResult {
         }// 遍历每一层金字塔
     }
 };
+
+
+
+struct CloudData {
+    GpuMat vertices;
+    GpuMat normals;
+    GpuMat color;
+    cv::Mat host_vertices;
+    cv::Mat host_normals;
+    cv::Mat host_color;
+    int* point_num;
+    int host_point_num;
+    explicit CloudData(const int max_number) :
+            vertices{cv::cuda::createContinuous(1, max_number, CV_32FC3)},
+            normals{cv::cuda::createContinuous(1, max_number, CV_32FC3)},
+            color{cv::cuda::createContinuous(1, max_number, CV_8UC3)},
+            host_vertices{}, host_normals{}, host_color{}, point_num{nullptr}, host_point_num{}
+    {
+        vertices.setTo(0.f);
+        normals.setTo(0.f);
+        color.setTo(0.f);
+        cudaMalloc(&point_num, sizeof(int));
+        cudaMemset(point_num, 0, sizeof(int));
+    }
+    // No copying
+    CloudData(const CloudData&) = delete;
+    CloudData& operator=(const CloudData& data) = delete;
+    void download()
+    {
+        vertices.download(host_vertices);
+        normals.download(host_normals);
+        color.download(host_color);
+        cudaMemcpy(&host_point_num, point_num, sizeof(int), cudaMemcpyDeviceToHost);
+    }
+};
