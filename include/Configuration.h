@@ -22,7 +22,7 @@ namespace config{
     // color_sigma：取决于深度图像的数值范围。通常，可以从范围的10%到30%开始尝试。
     // spatial_sigma：取决于图像的尺寸和噪声水平。可以从5到15的范围内尝试不同的值。  
     constexpr int KERNAL_SIZE = 5;// 双边滤波器使用的窗口（核）大小
-    constexpr float DEPTH_CUTOFF = 1000.f;//截断深度
+    constexpr float DEPTH_CUTOFF = 10000.f;//截断深度
     constexpr float COLOR_SIGMA = 1.f;// 值域滤波的方差
     constexpr float SPATIAL_SIGMA = 1.f;// 空间域滤波的方差
 
@@ -34,12 +34,12 @@ namespace config{
                             // 推荐取值范围通常在 1 到 30 度之间，具体取值需要根据应用场景和传感器的精度来确定。
     // icp_iterations：这个参数表示 ICP 配准过程的迭代次数。增加迭代次数可能会提高配准精度，但也会增加计算时间。
                             // 推荐的取值范围通常在 5 到 50 之间，具体取值需要根据实时性要求和计算资源来确定。
-    constexpr float DISTANCE_THRESHOLD { 200.f };
+    constexpr float DISTANCE_THRESHOLD { 30.f };
     constexpr float ANGLE_THRESHOLD { 50.f };
 
-    constexpr float VOXEL_SCALE = 2.f;
+    constexpr float VOXEL_SCALE = 10.f;
     constexpr float TRUNCATION_DISTANCE = 25.f;
-    constexpr float INIT_DEPTH = 1000.f;
+    constexpr float INIT_DEPTH = 8000.f;
     constexpr float DEPTH_SCALE = 5000; //深度图的缩放尺度
     
     // 迭代次数，即第一层迭代10次,第二层5次,第三层4次
