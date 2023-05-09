@@ -17,9 +17,9 @@ SurfaceReconstructor surfaceReconstructor,SurfacePredictor surfacePredictor)
         this->Tgk_Matrix = Eigen::Matrix4f::Identity();
         // The pose starts in the middle of the cube, offset along z by the initial depth
         // 第一帧的相机位姿设置在 Volume 的中心, 然后在z轴上拉远一点
-        Tgk_Matrix(0, 3) = 512 / 2 * 2.f;
-        Tgk_Matrix(1, 3) = 512 / 2 * 2.f;
-        Tgk_Matrix(2, 3) = 512 / 2 * 2.f - 1000.f;
+        Tgk_Matrix(0, 3) = configuration.volumeSize.x / 2 * configuration.voxelScale;
+        Tgk_Matrix(1, 3) = configuration.volumeSize.y / 2 * configuration.voxelScale;
+        Tgk_Matrix(2, 3) = configuration.volumeSize.z / 2 * configuration.voxelScale - configuration.initDepth;
 }
 
 
@@ -54,20 +54,6 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
         // icp失败之后本次处理退出,但是上一帧推理的得到的平面将会一直保持, 每次新来一帧都会重新icp后一直都在尝试重新icp, 尝试重定位回去
         return false;
     }
-        
-
-    // 记录当前帧的位姿
-    // poses.push_back(current_pose);
-    // if(this->frameId > 0){
-    //     std::cout << "aaaaaaaa" << std::endl;
-    //     std::cout << this->Tgk_Matrix << std::endl;
-    // }
-
-    // if(this->frameId == 0){
-    //     std::cout << "bbbbbbbbbb" << std::endl;
-    //     this->predictionResult.vertex_pyramid = frameData.vertex_pyramid;
-    //     this->predictionResult.normal_pyramid = frameData.normal_pyramid;
-    // }
    
 
     this->surfaceReconstructor.surface_reconstruction(
@@ -76,6 +62,7 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
             cameraParameters,                                  // 相机内参
             configuration.truncationDistance,                  // 截断距离u
             this->Tgk_Matrix.inverse());
+    std::cout << "重建完成" <<std::endl;
     
     for (int level = 0; level < configuration.numLevels; ++level)
         // 对每层图像的数据都进行表面的推理
@@ -87,6 +74,7 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
             cameraParameters.level(level),                 // 当前图层的相机内参
             configuration.truncationDistance,              // 截断距离
             this->Tgk_Matrix);
+    std::cout << "RayCasting完成" <<std::endl;
 
     this->frameId ++;
     return true;
@@ -113,17 +101,17 @@ Scheduler SchedulerFactory::build(){
         config::SPATIAL_SIGMA,
         config::NUM_LEVELS,
         config::DISTANCE_THRESHOLD,
-        config::ANGLE_THRESHOLD
+        config::ANGLE_THRESHOLD,
+        config::VOXEL_SCALE,
+        config::TRUNCATION_DISTANCE,
+        config::INIT_DEPTH,
+        config::DEPTH_SCALE
     );
+
     //初始化构造器
     PreProcessor preProcessor(cameraParameters,configuration);
     SurfaceMeasurement surfaceMeasurement(cameraParameters,configuration);
 
-    // int3 volumeSize;
-    // volumeSize.x = 512;
-    // volumeSize.y = 512;
-    // volumeSize.z = 512;
-    // ModelData modelData(volumeSize,0.005);
     PoseEstimator poseEstimator(cameraParameters,configuration);
     SurfaceReconstructor surfaceReconstructor(cameraParameters,configuration);
     SurfacePredictor surfacePredictor(cameraParameters,configuration);

@@ -36,6 +36,11 @@ namespace config{
                             // 推荐的取值范围通常在 5 到 50 之间，具体取值需要根据实时性要求和计算资源来确定。
     constexpr float DISTANCE_THRESHOLD { 200.f };
     constexpr float ANGLE_THRESHOLD { 50.f };
+
+    constexpr float VOXEL_SCALE = 2.f;
+    constexpr float TRUNCATION_DISTANCE = 25.f;
+    constexpr float INIT_DEPTH = 1000.f;
+    constexpr float DEPTH_SCALE = 5000; //深度图的缩放尺度
     
     // 迭代次数，即第一层迭代10次,第二层5次,第三层4次
     enum ICP_ITERATIONS{
@@ -76,14 +81,19 @@ namespace config{
         int numLevels; //生成金字塔的层数
         float distanceThreshold; // ICP 匹配过程中视为外点的距离差
         float angleThreshold; //匹配过程中视为外点的角度差（以度为单位）
+        float voxelScale;
+        float truncationDistance;
+        float initDepth;
+        float depthScale;
         std::vector<int> icpIterations {10, 5, 4}; //迭代次数,即第一层迭代10次,第二层5次,第三层4次
-        int3 volumeSize { make_int3(512, 512, 512) };
-        float voxelScale { 2.f };
-        float truncationDistance { 25.f };
+        int3 volumeSize { make_int3(512, 512, 512) };//tsdf的尺寸
 
 
-        GlobalConfiguration(float _depthCutoff, int _kernalSize, float _colorSigma, float _spatialSigma, int _numLevels, float _distanceThreshold, float _angleThreshold)
+        GlobalConfiguration(float _depthCutoff, int _kernalSize, float _colorSigma, 
+        float _spatialSigma, int _numLevels, float _distanceThreshold, 
+        float _angleThreshold,float voxelScale,float truncationDistance,float initDepth,float depthScale)
         : depthCutoff(_depthCutoff), kernalSize(_kernalSize), colorSigma(_colorSigma), spatialSigma(_spatialSigma),
-        numLevels(_numLevels), distanceThreshold(_distanceThreshold), angleThreshold(_angleThreshold) {};
+        numLevels(_numLevels), distanceThreshold(_distanceThreshold), angleThreshold(_angleThreshold),
+        voxelScale(voxelScale),truncationDistance(truncationDistance),initDepth(initDepth),depthScale(depthScale) {};
     };
 }
