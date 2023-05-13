@@ -10,7 +10,7 @@ PreProcessor::PreProcessor(CameraParameters cameraParameters,GlobalConfiguration
 FrameData PreProcessor::preProcess(const cv::Mat& depth_map){
     //传入的为16UC1的深度图，需要先转为32FC1
     cv::Mat depth_map_32f;
-    depth_map.convertTo(depth_map_32f, CV_32F);
+    depth_map.convertTo(depth_map_32f, CV_32F, 1.0/globalConfiguration.depthScale * 1000);
     //初始化帧数据
     int numLevels = globalConfiguration.numLevels;         
     FrameData data(numLevels,cameraParameters);

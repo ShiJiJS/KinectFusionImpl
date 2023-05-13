@@ -186,7 +186,7 @@ namespace step {
                                 // 通过计算叉乘得到两个向量夹角的正弦值. 由于 |axb|=|a||b|sin \alpha, 所以叉乘计算得到的向量的模就是 sin \alpha
                                 const float sine = normal_current_global.cross(normal_previous_global).norm();
                                 // ? 应该是夹角越大, sine 越大啊, 为什么这里是大于等于??? 
-                                if (sine >= angle_threshold) {
+                                if (sine <= angle_threshold) {
                                     // 认为通过检查, 保存关联结果和产生的数据
                                     n = normal_previous_global;
                                     d = vertex_previous_global;
