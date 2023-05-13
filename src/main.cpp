@@ -1,4 +1,5 @@
 #include "../include/Scheduler.h"
+#include "../include/Configuration.h"
 #include <string>
 #include <vector>
 #include <fstream>
@@ -35,10 +36,10 @@ std::vector<TimestampedImage> read_timestamps_and_filenames(const std::string& f
 int main(){
     Scheduler scheduler = SchedulerFactory::build();
 
-
-    std::string base_path = "/home/shiji/KinectFusionImpl/build/";
+    std::string base_path = "./";
     std::vector<TimestampedImage> depth_images = read_timestamps_and_filenames(base_path + "depth.txt");
     std::vector<TimestampedImage> rgb_images = read_timestamps_and_filenames(base_path + "rgb.txt");
+    std::cout << "Image sequences found." << std::endl;
 
     for (size_t i = 0; i < depth_images.size() && i < rgb_images.size(); ++i) {
         // 读取深度图像
@@ -49,7 +50,8 @@ int main(){
             std::cerr << "Failed to load image: " << depth_images[i].filename << " or " << rgb_images[i].filename << std::endl;
             continue;
         }
-
+        
+        std::cout << "Successfully read image " << i << "." << std::endl;
         bool success = scheduler.process_new_frame(depth_image_16U, rgb_image);
 
         if (!success) {
@@ -57,7 +59,10 @@ int main(){
         }
     }
 
+    std::cout << "All images processed, extracting point cloud, please wait." << std::endl;
     scheduler.extract_and_save_pointcloud();
+    std::cout << "Point clound saved in ./output.pcd." << std::endl;
+    system("pause");
 
     return 0;
 }

@@ -26,8 +26,10 @@ SurfaceReconstructor surfaceReconstructor,SurfacePredictor surfacePredictor)
 bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color_map){
     //预处理，转换格式，生成金字塔，双边滤波
     FrameData frameData = preProcessor.preProcess(depth_map);
+    //std::cout << "Preprocess done." << std::endl;
     //生成顶点图和法向量图
     surfaceMeasurement.genVertexAndNormalMap(frameData);
+    //std::cout << "Surface Measurement done." << std::endl;
     // //将顶点图保存为点云
     // cv::Mat downloaded_vertex_map;
     // frameData.vertex_pyramid[0].download(downloaded_vertex_map);
@@ -50,7 +52,7 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
     }
     // 如果 icp 过程不成功, 那么就说明当前失败了
     if (!icp_success){
-        std::cout << "ICP失败" <<std::endl;
+        std::cout << "ICP Failed." <<std::endl;
         // icp失败之后本次处理退出,但是上一帧推理的得到的平面将会一直保持, 每次新来一帧都会重新icp后一直都在尝试重新icp, 尝试重定位回去
         return false;
     }
@@ -62,7 +64,7 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
             cameraParameters,                                  // 相机内参
             configuration.truncationDistance,                  // 截断距离u
             this->Tgk_Matrix.inverse());
-    std::cout << "重建完成" <<std::endl;
+    //std::cout << "Reconstruct complete." <<std::endl;
     
     for (int level = 0; level < configuration.numLevels; ++level)
         // 对每层图像的数据都进行表面的推理
@@ -74,8 +76,8 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
             cameraParameters.level(level),                 // 当前图层的相机内参
             configuration.truncationDistance,              // 截断距离
             this->Tgk_Matrix);
-    std::cout << "RayCasting完成" <<std::endl;
-
+    //std::cout << "Raycasting done." <<std::endl;
+    std::cout << "All steps succeeded." << std::endl;
     this->frameId ++;
     return true;
 
@@ -85,33 +87,88 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
 //构造调度器。工厂模式
 Scheduler SchedulerFactory::build(){
     //设置参数
+
+    // create a map of strings and floats
+    std::map<std::string, float> parameters;
+
+    // create an input file stream
+    std::ifstream infile("./config.ini");
+
+    // check if the file is opened
+    if (infile.is_open()) {
+        // create a string variable to store each line
+        std::string line;
+
+        // loop through each line in the file
+        while (std::getline(infile, line)) {
+            // create a string variable to store the parameter name
+            std::string name;
+
+            // create a float variable to store the parameter value
+            float value;
+
+            // use string::find() to find the position of '='
+            size_t pos = line.find('=');
+
+            // use string::substr() to extract the parameter name
+            name = line.substr(0, pos - 1);
+
+            // use string::substr() to extract the parameter value
+            std::string valstr = line.substr(pos + 1);
+
+            // check if the parameter value has a decimal point
+            if (valstr.find('.') != std::string::npos) {
+                // convert it to a float using std::stof()
+                value = std::stof(valstr);
+            }
+            else {
+                // convert it to an int using std::stoi()
+                value = std::stoi(valstr);
+            }
+
+            // insert the parameter name and value into the map
+            parameters.insert(std::make_pair(name, value));
+        }
+
+        // close the file
+        infile.close();
+    }
+    else {
+        // print an error message
+        std::cout << "Unable to open file\n";
+    }
+
+    // print the map contents
+    for (auto pair : parameters) {
+        std::cout << pair.first << " = " << pair.second << "\n";
+    }
+
     CameraParameters cameraParameters(
-        config::IMAGE_WIDTH,
-        config::IMAGE_HEIGHT,
-        config::FOCAL_X,
-        config::FOCAL_Y,
-        config::PRINCIPAL_X,
-        config::PRINCIPAL_Y
+        parameters["IMAGE_WIDTH"],
+        parameters["IMAGE_HEIGHT"],
+        parameters["FOCAL_X"],
+        parameters["FOCAL_Y"],
+        parameters["PRINCIPAL_X"],
+        parameters["PRINCIPAL_Y"]
     );
 
     GlobalConfiguration configuration(
-        config::DEPTH_CUTOFF,
-        config::KERNAL_SIZE,
-        config::COLOR_SIGMA,
-        config::SPATIAL_SIGMA,
-        config::NUM_LEVELS,
-        config::DISTANCE_THRESHOLD,
-        config::ANGLE_THRESHOLD,
-        config::VOXEL_SCALE,
-        config::TRUNCATION_DISTANCE,
-        config::INIT_DEPTH,
-        config::DEPTH_SCALE
+        parameters["DEPTH_CUTOFF"],
+        parameters["KERNAL_SIZE"],
+        parameters["COLOR_SIGMA"],
+        parameters["SPATIAL_SIGMA"],
+        parameters["NUM_LEVELS"],
+        parameters["DISTANCE_THRESHOLD"],
+        parameters["ANGLE_THRESHOLD"],
+        parameters["VOXEL_SCALE"],
+        parameters["TRUNCATION_DISTANCE"],
+        parameters["INIT_DEPTH"],
+        parameters["DEPTH_SCALE"]
     );
 
     //初始化构造器
     PreProcessor preProcessor(cameraParameters,configuration);
     SurfaceMeasurement surfaceMeasurement(cameraParameters,configuration);
-
     PoseEstimator poseEstimator(cameraParameters,configuration);
     SurfaceReconstructor surfaceReconstructor(cameraParameters,configuration);
     SurfacePredictor surfacePredictor(cameraParameters,configuration);
