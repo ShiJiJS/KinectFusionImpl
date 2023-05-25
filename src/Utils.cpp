@@ -1,4 +1,7 @@
 #include "../include/Utils.h"
+#include <pcl/io/pcd_io.h>    // pcd相关头文件
+#include <pcl/point_types.h>  // 所有点类型定义头文件
+#include <pcl/io/ply_io.h>    // ply类相关头文件
 
 namespace utils{
     //读入深度图索引文件并返回包含文件路径的vector
@@ -86,23 +89,6 @@ namespace utils{
        return cloud;
     }
 
-    // void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map) {
-    //     // 遍历顶点图的每个像素
-    //     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    //     for (int y = 0; y < vertex_map.rows; ++y) {
-    //         for (int x = 0; x < vertex_map.cols; ++x) {
-    //             // 获取顶点坐标（X, Y, Z）
-    //             cv::Vec3f vertex = vertex_map.at<cv::Vec3f>(y, x);
-    //             //忽略无效的点（例如深度为0的点）
-    //             if (vertex[2] == 0) continue;
-    //             // 将三维点添加到点云中
-    //             cloud->push_back(pcl::PointXYZ(vertex[0] / 1000, vertex[1] /1000, vertex[2]/1000));
-    //         }
-    //     }
-    //     // 保存点云为PCD文件
-    //     pcl::io::savePCDFileASCII("output.pcd", *cloud);
-    // }
-
     void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map, const cv::Mat& color_map) {
         // 遍历顶点图的每个像素
         pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -112,10 +98,10 @@ namespace utils{
                 cv::Vec3f vertex = vertex_map.at<cv::Vec3f>(y, x);
                 // 忽略无效的点（例如深度为0的点）
                 if (vertex[2] == 0) continue;
-    
+
                 // 获取对应的颜色
                 cv::Vec3b color = color_map.at<cv::Vec3b>(y, x);
-    
+
                 // 将三维点添加到点云中，并设置RGB值
                 pcl::PointXYZRGB point;
                 point.x = vertex[0] / 1000;
@@ -124,11 +110,14 @@ namespace utils{
                 point.r = color[2];
                 point.g = color[1];
                 point.b = color[0];
-    
+
                 cloud->push_back(point);
             }
         }
         // 保存点云为PCD文件
-        pcl::io::savePCDFileASCII("output.pcd", *cloud);
+        pcl::io::savePCDFile("output.pcd", *cloud);
+        //保存点云为PLY文件
+	    pcl::PLYWriter writer;
+	    writer.write("output.ply", *cloud); 
     }
 }
