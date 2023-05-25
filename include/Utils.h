@@ -22,6 +22,6 @@ namespace utils{
     //生成含有坐标法向量和RGB的点云
     PointCloud<pcl::PointXYZRGBNormal>::Ptr create_point_cloud(const cv::Mat& vertex_map, const cv::Mat& normal_map);
     //生成仅有坐标的点云
-    void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map);
+    void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map,const cv::Mat& color_map);
 
 }

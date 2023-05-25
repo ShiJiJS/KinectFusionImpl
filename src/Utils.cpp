@@ -86,17 +86,46 @@ namespace utils{
        return cloud;
     }
 
-    void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map) {
+    // void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map) {
+    //     // 遍历顶点图的每个像素
+    //     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    //     for (int y = 0; y < vertex_map.rows; ++y) {
+    //         for (int x = 0; x < vertex_map.cols; ++x) {
+    //             // 获取顶点坐标（X, Y, Z）
+    //             cv::Vec3f vertex = vertex_map.at<cv::Vec3f>(y, x);
+    //             //忽略无效的点（例如深度为0的点）
+    //             if (vertex[2] == 0) continue;
+    //             // 将三维点添加到点云中
+    //             cloud->push_back(pcl::PointXYZ(vertex[0] / 1000, vertex[1] /1000, vertex[2]/1000));
+    //         }
+    //     }
+    //     // 保存点云为PCD文件
+    //     pcl::io::savePCDFileASCII("output.pcd", *cloud);
+    // }
+
+    void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map, const cv::Mat& color_map) {
         // 遍历顶点图的每个像素
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
         for (int y = 0; y < vertex_map.rows; ++y) {
             for (int x = 0; x < vertex_map.cols; ++x) {
                 // 获取顶点坐标（X, Y, Z）
                 cv::Vec3f vertex = vertex_map.at<cv::Vec3f>(y, x);
-                //忽略无效的点（例如深度为0的点）
+                // 忽略无效的点（例如深度为0的点）
                 if (vertex[2] == 0) continue;
-                // 将三维点添加到点云中
-                cloud->push_back(pcl::PointXYZ(vertex[0] / 1000, vertex[1] /1000, vertex[2]/1000));
+    
+                // 获取对应的颜色
+                cv::Vec3b color = color_map.at<cv::Vec3b>(y, x);
+    
+                // 将三维点添加到点云中，并设置RGB值
+                pcl::PointXYZRGB point;
+                point.x = vertex[0] / 1000;
+                point.y = vertex[1] / 1000;
+                point.z = vertex[2] / 1000;
+                point.r = color[2];
+                point.g = color[1];
+                point.b = color[0];
+    
+                cloud->push_back(point);
             }
         }
         // 保存点云为PCD文件

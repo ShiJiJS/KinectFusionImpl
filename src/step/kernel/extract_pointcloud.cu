@@ -93,7 +93,7 @@ void Scheduler::extract_and_save_pointcloud() {
             cloud_data.point_num);
     cudaThreadSynchronize();
     cloud_data.download();
-    utils::vertexMapToPointCloudAndSave(cloud_data.host_vertices);
+    utils::vertexMapToPointCloudAndSave(cloud_data.host_vertices,cloud_data.host_color);
     std::cout << "点云输出成功" << std::endl;
     
 }
