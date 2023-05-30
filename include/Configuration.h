@@ -47,7 +47,7 @@ namespace config{
         float voxelScale;
         float truncationDistance;
         float initDepth;
-        float depthScale;
+        float depthScale; //深度图的尺度，用深度图中的值除该值便是以米为单位的真实距离
         std::vector<int> icpIterations {10, 5, 4}; //迭代次数,即第一层迭代10次,第二层5次,第三层4次
         int3 volumeSize { make_int3(512, 512, 512) };//tsdf的尺寸
 
