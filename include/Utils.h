@@ -24,4 +24,7 @@ namespace utils{
     //生成仅有坐标的点云
     void vertexMapToPointCloudAndSave(const cv::Mat& vertex_map,const cv::Mat& color_map);
 
+    //读取配置文件
+    std::map<std::string, float> readConfigFile(const std::string filePath);
+
 }

@@ -36,20 +36,19 @@ namespace config{
     };
 
     struct GlobalConfiguration {
-        // common.h
-        float depthCutoff; //截断深度
-        int kernalSize; //双边滤波器的窗口（核）的大小
-        float colorSigma; //值域滤波的方差
-        float spatialSigma; //空间域滤波的方差
-        int numLevels; //生成金字塔的层数
-        double distanceThreshold; // ICP 匹配过程中视为外点的距离差
-        float angleThreshold; //匹配过程中视为外点的角度差（以度为单位）
-        float voxelScale;
-        float truncationDistance;
-        float initDepth;
-        float depthScale; //深度图的尺度，用深度图中的值除该值便是以米为单位的真实距离
-        std::vector<int> icpIterations {10, 5, 4}; //迭代次数,即第一层迭代10次,第二层5次,第三层4次
-        int3 volumeSize { make_int3(512, 512, 512) };//tsdf的尺寸
+        float depthCutoff;                  // 截断深度
+        int kernalSize;                     // 双边滤波器的窗口（核）的大小
+        float colorSigma;                   // 值域滤波的方差
+        float spatialSigma;                 // 空间域滤波的方差
+        int numLevels;                      // 生成金字塔的层数
+        double distanceThreshold;           // ICP 匹配过程中视为外点的距离差
+        float angleThreshold;               // 匹配过程中视为外点的角度差（以度为单位）
+        float voxelScale;                   // 体素块大小
+        float truncationDistance;           // 构建TSDF的截断距离
+        float initDepth;                    // 起始时相机在Z轴的初始位置
+        float depthScale;                   // 深度图的尺度，用深度图中的值除该值便是以米为单位的真实距离
+        std::vector<int> icpIterations {10, 5, 4};   // 迭代次数,即第一层迭代10次,第二层5次,第三层4次
+        int3 volumeSize { make_int3(512, 512, 512) }; // tsdf的尺寸
 
         GlobalConfiguration(float _depthCutoff, int _kernalSize, float _colorSigma, 
         float _spatialSigma, int _numLevels, float _distanceThreshold, 

@@ -49,5 +49,5 @@ public:
 
 class SchedulerFactory{
 public:
-    static Scheduler build();
+    static Scheduler build(std::string configFilePath);
 };

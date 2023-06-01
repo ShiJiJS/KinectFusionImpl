@@ -41,9 +41,6 @@ namespace step{
         point_in_grid.y = (point.y() < vy) ? (point_in_grid.y - 1) : point_in_grid.y;
         point_in_grid.z = (point.z() < vz) ? (point_in_grid.z - 1) : point_in_grid.z;
 
-        // +0.5f 的原因是, point_in_grid 处体素存储的TSDF值是体素的中心点的TSDF值
-        // 三线型插值, ref: https://en.wikipedia.org/wiki/Trilinear_interpolation
-        // 计算精确的(浮点型)的点坐标和整型化之后的点坐标的差
         const float a = (point.x() - (static_cast<float>(point_in_grid.x) + 0.5f));
         const float b = (point.y() - (static_cast<float>(point_in_grid.y) + 0.5f));
         const float c = (point.z() - (static_cast<float>(point_in_grid.z) + 0.5f));

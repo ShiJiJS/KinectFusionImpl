@@ -4,7 +4,9 @@
 #define __device__
 #endif // __CUDACC__
 
-#include <vector_types.h> 
+#include <vector_types.h>
+
+//eigen库在kernel函数中的内存分配会出问题。因此使用下面的矩阵形式，来规避内存问题
 
 //matrix of pose estimation
 namespace mpe {

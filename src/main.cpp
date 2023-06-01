@@ -7,6 +7,7 @@
 #include <iostream>
 #include <chrono>
 
+//用于处理TUM数据集
 struct TimestampedImage {
     double timestamp;
     std::string filename;
@@ -32,6 +33,7 @@ std::vector<TimestampedImage> read_timestamps_and_filenames(const std::string& f
     return result;
 }
 
+//用于处理ICL-NUIM数据集
 struct AssociatedImages {
     std::string depth_filename;
     std::string rgb_filename;
@@ -64,7 +66,7 @@ std::vector<AssociatedImages> read_associations(const std::string& filepath) {
 
 
 int main(){
-    Scheduler scheduler = SchedulerFactory::build();
+    Scheduler scheduler = SchedulerFactory::build("./config.txt");
     // 开始计时
     auto start = std::chrono::high_resolution_clock::now();
     size_t i = 0;

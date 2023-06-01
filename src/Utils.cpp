@@ -128,4 +128,38 @@ namespace utils{
         // 以Binary格式保存点云为PLY文件
         writer.writeBinary("output_binary.ply", cloud2, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), false);
     }
+
+    std::map<std::string, float> readConfigFile(const std::string filePath){
+        std::map<std::string, float> parameters;
+        
+        std::ifstream infile(filePath);
+
+        if (infile.is_open()) {
+            std::string line;
+
+            while (std::getline(infile, line)) {
+                std::string name;
+                float value;
+
+                size_t pos = line.find('=');
+
+                name = line.substr(0, pos - 1);
+
+                std::string valstr = line.substr(pos + 1);
+
+                if (valstr.find('.') != std::string::npos) {
+                    value = std::stof(valstr);
+                }
+                else {
+                    value = std::stoi(valstr);
+                }
+                parameters.insert(std::make_pair(name, value));
+            }
+            infile.close();
+        }
+        else {
+            std::cout << "Unable to open file\n";
+        }
+        return parameters;
+    }
 }

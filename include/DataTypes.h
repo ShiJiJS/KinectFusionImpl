@@ -8,10 +8,11 @@
 using cv::cuda::GpuMat;
 using config::CameraParameters;
 
+//帧数据，存储每一帧的图像金字塔
 struct FrameData {
     std::vector<GpuMat> depth_pyramid;                              // 原始深度图的金字塔
     std::vector<GpuMat> smoothed_depth_pyramid;                     // 滤波后的深度图金字塔
-    std::vector<GpuMat> color_pyramid;
+    std::vector<GpuMat> color_pyramid;                              // rgb图金字塔
     std::vector<GpuMat> vertex_pyramid;                             // 3D点金字塔
     std::vector<GpuMat> normal_pyramid;                             // 法向量金字塔
 
@@ -36,15 +37,16 @@ struct FrameData {
 };
 
 
+
+//存储包含物体表面信息和颜色信息的TSDF结构
 struct ModelData {
-    // OpenCV 提供的在GPU上的图像数据类型
     GpuMat tsdfVolume; //short2
     GpuMat colorVolume; //uchar4
     int3 volumeSize;
     float voxelScale;
     // 构造函数
     ModelData(const int3 volumeSize, const float voxelScale) :
-            // 注意 TSDF 是2通道的, 意味着其中一个通道存储TSDF函数值, 另外一个通道存储其权重
+            //其中一个通道存储值，另一个通道存储权重
             tsdfVolume(cv::cuda::createContinuous(volumeSize.y * volumeSize.z, volumeSize.x, CV_16SC2)),
             colorVolume(cv::cuda::createContinuous(volumeSize.y * volumeSize.z, volumeSize.x, CV_8UC3)),
             volumeSize(volumeSize), voxelScale(voxelScale)
@@ -59,11 +61,11 @@ struct ModelData {
 struct PredictionResult {
     std::vector<GpuMat> vertex_pyramid;                     // 三维点的金字塔
     std::vector<GpuMat> normal_pyramid;                     // 法向量的金字塔
-    std::vector<GpuMat> color_pyramid;
+    std::vector<GpuMat> color_pyramid;                      // 颜色图的金字塔
 
      // 构造函数
     PredictionResult(const size_t pyramid_height, const CameraParameters camera_parameters) :
-            // 初始化三个"图像"金字塔的高度
+            //初始化三个金字塔
             vertex_pyramid(pyramid_height), normal_pyramid(pyramid_height),color_pyramid(pyramid_height)
     {
         // 遍历每一层金字塔
@@ -89,7 +91,7 @@ struct PredictionResult {
 };
 
 
-
+//点云数据，用于通过TSDF生成点云时使用
 struct CloudData {
     GpuMat vertices;
     GpuMat normals;

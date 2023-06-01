@@ -12,7 +12,6 @@ using mpe::Matf33;
 
 using cv::cuda::PtrStep;
 using cv::cuda::PtrStepSz;
-// using Matf31da = Eigen::Matrix<float, 3, 1, Eigen::DontAlign>;
 
 namespace step {
     namespace kernel{
@@ -31,7 +30,6 @@ namespace step {
             // step 1 归约过程开始, 之所以这样做是为了充分利用 GPU 的并行特性
             if (SIZE >= 1024) {
                 if (thread_id < 512) buffer[thread_id] = value = value + buffer[thread_id + 512];
-                // 一定要同步! 因为如果block规模很大的话, 其中的线程是分批次执行的, 这里就会得到错误的结果
                 __syncthreads();
             }
             if (SIZE >= 512) {
@@ -72,7 +70,6 @@ namespace step {
             for (int t = threadIdx.x; t < length; t += 512)
                 sum += *(global_buffer.ptr(blockIdx.x) + t);
 
-            // 对于 GTX 1070, 每个 block 的 shared_memory 最大大小是 48KB, 足够使用了, 这里相当于只用了 1/12
             // 前面设置线程个数为这些, 也是为了避免每个 block 中的 shared memory 超标, 又能够尽可能地使用所有的 shared memory
             __shared__ double smem[512];
 
@@ -185,7 +182,6 @@ namespace step {
 
                                 // 通过计算叉乘得到两个向量夹角的正弦值. 由于 |axb|=|a||b|sin \alpha, 所以叉乘计算得到的向量的模就是 sin \alpha
                                 const float sine = normal_current_global.cross(normal_previous_global).norm();
-                                // ? 应该是夹角越大, sine 越大啊, 为什么这里是大于等于??? 
                                 if (sine <= angle_threshold) {
                                     // 认为通过检查, 保存关联结果和产生的数据
                                     n = normal_previous_global;
@@ -206,11 +202,6 @@ namespace step {
             // 只有对成功匹配的点才会进行的操作. 这个判断也会滤除那些线程坐标不在图像中的线程, 这样做可以减少程序中的分支数目
             if (correspondence_found) {
                 // // 前面的强制类型转换符号, 目测是为了转换成为 Eigen 中表示矩阵中浮点数元素的类型, 可以将计算结果直接一次写入到 row[0] row[1] row[2]
-                // // 矩阵A中的两个主要元素
-                // *(Matf31da*) &row[0] = s.cross(n);
-                // *(Matf31da*) &row[3] = n;
-                // // 矩阵b中当前点贡献的部分
-                // row[6] = n.dot(d - s);
                 Matf31 s_cross_n = s.cross(n);
                 row[0] = s_cross_n.x00;
                 row[1] = s_cross_n.x10;
@@ -329,22 +320,6 @@ namespace step {
             cv::Mat host_data { 27, 1, CV_64FC1 };
             sum_buffer.download(host_data);
             // 组装
-            // 按照前面的推导, 矩阵A和向量b的最终形式使用rows[*]的下标表示分别为:
-            //      | 0x0 0x1 0x2 0x3 0x4 0x5 |                 | 00 01 02 03 04 05 |
-            //      | 0x1 1x1 1x2 1x3 1x4 1x5 |                 | 01 07 08 09 10 11 |
-            //      | 0x2 1x2 2x2 2x3 2x4 2x5 |   按buffer下标   | 02 08 13 14 15 16 |  
-            // A =  | 0x3 1x3 2x3 3x3 3x4 3x5 | =============== | 03 19 14 18 19 20 | => 斜三角对称矩阵, 只要构造上三角, 下三角对称复制就可以了
-            //      | 0x4 1x4 2x4 3x4 4x4 4x5 |                 | 04 10 15 19 22 23 |
-            //      | 0x5 1x5 2x5 3x5 4x5 5x5 |                 | 05 11 16 20 23 25 |
-            //
-            //      | 0x6 |                     | 06 |
-            //      | 1x6 |                     | 12 |
-            //      | 2x6 |   按buffer下标       | 17 |
-            // b =  | 3x6 | ================    | 21 |  => j=6 都是 b
-            //      | 4x6 |                     | 24 |
-            //      | 5x6 |                     | 26 |
-            //
-
             int shift = 0;
             for (int i = 0; i < 6; ++i) { // Rows
                 for (int j = i; j < 7; ++j) { // Columns and B
