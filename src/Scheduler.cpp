@@ -56,7 +56,8 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
         // icp失败之后本次处理退出,但是上一帧推理的得到的平面将会一直保持, 每次新来一帧都会重新icp后一直都在尝试重新icp, 尝试重定位回去
         return false;
     }
-   
+    //将每次迭代的位姿结果保存
+    this->pose_history.push_back(this->Tgk_Matrix);
 
     this->surfaceReconstructor.surface_reconstruction(
             frameData.depth_pyramid[0],                        // 金字塔底层的深度图像
@@ -81,6 +82,22 @@ bool Scheduler::process_new_frame(const cv::Mat& depth_map, const cv::Mat& color
     this->frameId ++;
     return true;
 
+}
+
+//保存位姿信息
+void Scheduler::save_poses(){
+    std::ofstream outfile("poses.txt");
+    for(const auto& pose : pose_history) {
+        for(int i=0; i<3; ++i) {
+            for(int j=0; j<4; ++j) {
+                outfile << pose(i,j);
+                if(j<3) outfile << " ";
+            }
+            outfile << "\n";
+        }
+        outfile << "\n";
+    }
+    outfile.close();
 }
 
 

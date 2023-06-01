@@ -30,6 +30,7 @@ private:
     SurfacePredictor surfacePredictor;
     Eigen::Matrix4f Tgk_Matrix; //相机位姿的转移矩阵
     PredictionResult predictionResult; //Raycasting算出的顶点图和法向图
+    std::vector<Eigen::Matrix4f> pose_history;//存储之前的位姿结果
     
 public:
     Scheduler(CameraParameters cameraParameters,GlobalConfiguration configuration,
@@ -42,6 +43,8 @@ public:
     bool process_new_frame(const cv::Mat& depth_map, const cv::Mat& color_map);
 
     void extract_and_save_pointcloud();
+    //将位姿信息保存到文件中
+    void save_poses();
 };
 
 class SchedulerFactory{

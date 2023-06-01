@@ -98,7 +98,7 @@ int main(){
     std::vector<AssociatedImages> images = read_associations(base_path + "associations.txt");
     std::cout << "Image sequences found." << std::endl;
 
-    for (size_t i = 0; i < images.size(); ++i) {
+    for (i = 0; i < images.size(); ++i) {
         // 读取深度图像和RGB图像
         cv::Mat depth_image_16U = cv::imread(base_path + images[i].depth_filename, cv::IMREAD_UNCHANGED);
         cv::Mat rgb_image = cv::imread(base_path + images[i].rgb_filename, cv::IMREAD_COLOR);
@@ -138,6 +138,6 @@ int main(){
     std::cout << "已处理完所有图片，正在导出点云" << std::endl;
     scheduler.extract_and_save_pointcloud();
     std::cout << "点云已保存至output.pcd 和 output.ply" << std::endl;
-
+    scheduler.save_poses();
     return 0;
 }

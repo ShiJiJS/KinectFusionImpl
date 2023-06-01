@@ -114,10 +114,18 @@ namespace utils{
                 cloud->push_back(point);
             }
         }
-        // 保存点云为PCD文件
-        pcl::io::savePCDFile("output.pcd", *cloud);
-        //保存点云为PLY文件
-	    pcl::PLYWriter writer;
-	    writer.write("output.ply", *cloud); 
+
+        // 将PointCloud<pcl::PointXYZRGB>转换为PCLPointCloud2
+        pcl::PCLPointCloud2 cloud2;
+        pcl::toPCLPointCloud2(*cloud, cloud2);
+
+        // 创建一个PLYWriter对象
+        pcl::PLYWriter writer;
+
+        // 以ASCII格式保存点云为PLY文件
+        writer.writeASCII("output_ascii.ply", cloud2, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), 8, false);
+
+        // 以Binary格式保存点云为PLY文件
+        writer.writeBinary("output_binary.ply", cloud2, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), false);
     }
 }
