@@ -1,6 +1,6 @@
 
 
-| [English](https://github.com/ShiJiJS/KinectFusionImpl/blob/main/readme_files/README_EN.md)| 简体中文 | 
+| [English](https://github.com/ShiJiJS/KinectFusionImpl/blob/main/readme_files/README_EN.md) | 简体中文 | 
 
 # KinectFusionImpl
 
