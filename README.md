@@ -1,6 +1,6 @@
 
 
-**| [English](https://github.com/ShiJiJS/KinectFusionImpl/blob/main/readme_files/README_EN.md)| 简体中文 | **
+| [English](https://github.com/ShiJiJS/KinectFusionImpl/blob/main/readme_files/README_EN.md)| 简体中文 | 
 
 # KinectFusionImpl
 
@@ -71,5 +71,4 @@ DEPTH_SCALE = 5000
 
 ## Reference
 
-本项目是在**[KinectFusionLib](https://github.com/chrdiller/KinectFusionLib)**的基础上修改而来，并参照了[KinectFusionAppLib_comments](https://github.com/DreamWaterFound/KinectFusionAppLib_comments)的注解，在此非常感谢以上两个仓库的贡献者。
-
+本项目是在[KinectFusionLib](https://github.com/chrdiller/KinectFusionLib)的基础上修改而来，并参照了[KinectFusionAppLib_comments](https://github.com/DreamWaterFound/KinectFusionAppLib_comments)的注解，在此非常感谢以上两个仓库的贡献者。

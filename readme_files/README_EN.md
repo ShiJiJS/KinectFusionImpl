@@ -65,4 +65,4 @@ For scene reconstruction, we tested the algorithm using the ICL-NUIM dataset and
 
 ## Reference
 
-This project is modified based on the **[KinectFusionLib](https://github.com/chrdiller/KinectFusionLib)**, and referred to the annotations of [KinectFusionAppLib_comments](https://github.com/DreamWaterFound/KinectFusionAppLib_comments). We are very grateful to the contributors of the above two repositories.
+This project is modified based on the [KinectFusionLib](https://github.com/chrdiller/KinectFusionLib), and referred to the annotations of [KinectFusionAppLib_comments](https://github.com/DreamWaterFound/KinectFusionAppLib_comments). We are very grateful to the contributors of the above two repositories.
