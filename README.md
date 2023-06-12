@@ -52,7 +52,7 @@ TRUNCATION_DISTANCE = 200.f
 INIT_DEPTH = 1000.f
 DEPTH_SCALE = 5000
 ```
-
+参数的具体含义请参照include/Configuration.h中的描述
 
 
 ## Results
